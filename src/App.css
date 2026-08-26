@@ -1,0 +1,120 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f8f4;
+}
+
+.login-card {
+  width: 420px;
+  padding: 40px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #198754;
+  color: white;
+  font-size: 32px;
+}
+
+.logo-section h1 {
+  color: #198754;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.logo-section p {
+  color: #666;
+  font-size: 14px;
+}
+
+.login-card h2 {
+  text-align: center;
+  font-size: 25px;
+  color: #222;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: #777;
+  margin: 8px 0 25px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form label {
+  margin-bottom: 7px;
+  font-weight: 600;
+  color: #333;
+}
+
+form input,
+form select {
+  padding: 13px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+}
+
+form input:focus,
+form select:focus {
+  border-color: #198754;
+}
+
+button {
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #198754;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button:hover {
+  background: #146c43;
+}
+
+.register-text {
+  text-align: center;
+  margin-top: 22px;
+  color: #666;
+}
+
+.register-text span {
+  color: #198754;
+  font-weight: bold;
+  cursor: pointer;
+}
