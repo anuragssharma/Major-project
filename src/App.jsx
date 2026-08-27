@@ -15,7 +15,7 @@ function App() {
             <h1>eDonationHub</h1>
           </div>
 
-          <h2>Welcome Back</h2>
+          <h2>Welcome</h2>
           <p className="login-subtitle">
             Login to continue to eDonationHub
           </p>
@@ -29,6 +29,7 @@ function App() {
 
             <div className="role-section">
               <label>Login As</label>
+              <br/>
               <select>
                 <option value="donor">Donor</option>
                 <option value="ngo">NGO</option>
