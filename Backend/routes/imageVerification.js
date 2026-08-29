@@ -4,7 +4,7 @@ import { GoogleGenAI } from '@google/genai'
 const router = express.Router()
 
 const ai = new GoogleGenAI({
-  apiKey: AQ.Ab8RN6K6fEDHJ2k8ncR3wUTO_KxQIstlHwSJ8-OKtt27d-rb4w
+  apiKey: process.env.GEMINI_API_KEY
 })
 
 router.post('/verify', async (req, res) => {
