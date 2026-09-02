@@ -7,11 +7,21 @@ export default function Contact({ navigate }) {
       <nav className="content-navbar">
         <div className="content-nav-logo">♻ eDonationHub</div>
         <div className="content-nav-links">
-          <button onClick={() => navigate('home')} className="content-nav-item">Home</button>
-          <button onClick={() => navigate('about')} className="content-nav-item">About Us</button>
-          <button onClick={() => navigate('impact')} className="content-nav-item">Our Impact</button>
-          <button onClick={() => navigate('contact')} className="content-nav-item">Contact Us</button>
-          <button onClick={() => navigate('login')} className="content-nav-item">Sign In</button>
+          <button onClick={() => navigate('home')} className="content-nav-item">
+            Home
+          </button>
+          <button onClick={() => navigate('about')} className="content-nav-item">
+            About Us
+          </button>
+          <button onClick={() => navigate('impact')} className="content-nav-item">
+            Our Impact
+          </button>
+          <button onClick={() => navigate('contact')} className="content-nav-item">
+            Contact Us
+          </button>
+          <button onClick={() => navigate('login')} className="content-nav-item">
+            Sign In
+          </button>
         </div>
       </nav>
 

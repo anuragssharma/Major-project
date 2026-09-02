@@ -5,13 +5,14 @@ export default function NgoDashboard({ user, navigate, logout }) {
             <strong>eDonationHub — NGO
             </strong>
             <nav>
-                <button onClick={() => navigate('ngo-dashboard')}>Dashboard
+                <button onClick={() => navigate('ngo-available')}>
+                    Available Donations
                 </button>
-                <button onClick={() => navigate('ngo-available')}>Available Donations
+                <button onClick={() => navigate('ngo-requests')}>
+                    My Requests
                 </button>
-                <button onClick={() => navigate('ngo-requests')}>My Requests
-                </button>
-                <button onClick={logout}>Logout
+                <button onClick={logout}>
+                    Logout
                 </button>
             </nav>
         </header>

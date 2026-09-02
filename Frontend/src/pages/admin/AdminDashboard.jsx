@@ -5,15 +5,17 @@ export default function AdminDashboard({ user, navigate, logout }) {
             <strong>eDonationHub — Admin
             </strong>
             <nav>
-                <button onClick={() => navigate('admin-dashboard')}>Dashboard
+                <button onClick={() => navigate('admin-ngo-requests')}>
+                    NGO Requests
                 </button>
-                <button onClick={() => navigate('admin-ngo-requests')}>NGO Requests
+                <button onClick={() => navigate('admin-ngos')}>
+                    Manage NGOs
                 </button>
-                <button onClick={() => navigate('admin-ngos')}>Manage NGOs
+                <button onClick={() => navigate('admin-donors')}>
+                    Manage Donors
                 </button>
-                <button onClick={() => navigate('admin-donors')}>Manage Donors
-                </button>
-                <button onClick={() => navigate('admin-donations')}>Donations
+                <button onClick={() => navigate('admin-donations')}>
+                    Donations
                 </button>
                 <button onClick={logout}>Logout
                 </button>

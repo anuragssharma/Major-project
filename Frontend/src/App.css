@@ -128,6 +128,34 @@ textarea {
     padding: 8px;
 }
 
+.topbarhome {
+    background: #0b4f26;
+    color: white;
+    padding: 16px 6%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    gap: 20px;
+}
+
+.topbarhome strong {
+    font-size: 21px;
+}
+
+.topbarhome nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.topbarhome button {
+    border: 0;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -198,6 +226,10 @@ th {
     }
 
     .topbar {
+        align-items: flex-start;
+        flex-direction: column
+    }
+    .topbarhome {
         align-items: flex-start;
         flex-direction: column
     }

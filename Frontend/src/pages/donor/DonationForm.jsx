@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import "../../pages/donor/DonationForm.css"
 
-export default function DonationForm() {
+export default function DonationForm({ navigate }) {
   const [form, setForm] = useState({
     device: '',
     quantity: 1,
@@ -121,97 +121,107 @@ export default function DonationForm() {
   }
 
   return (
-    <div className="donation-page">
-      <div className="donation-card">
-        <div className="donation-header">
-          <h1>Donate E-Waste</h1>
-          <p>Help give your old electronics a second life.</p>
-        </div>
+    <>
+      <header className="topbar">
+        <strong>My Donations
+        </strong>
+        <button onClick={() => navigate('donor-dashboard')}>
+          Dashboard
+        </button>
+      </header>
+      <div className="donation-page">
 
-        {error && <div className="form-alert error">{error}</div>}
-        {success && <div className="form-alert success">{success}</div>}
-
-        <form onSubmit={submit}>
-          <div className="form-grid">
-            <div className="form-group">
-              <label>E-Waste Type</label>
-              <select name="device" value={form.device} onChange={update}>
-                <option value="">Select device</option>
-                {devices.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Quantity</label>
-              <input name="quantity" type="number" min="1" value={form.quantity} onChange={update} />
-            </div>
-
-            <div className="form-group">
-              <label>Condition</label>
-              <select name="condition" value={form.condition} onChange={update}>
-                <option value="">Select condition</option>
-                <option>Working</option>
-                <option>Partially Working</option>
-                <option>Not Working</option>
-                <option>For Parts</option>
-              </select>
-            </div>
-
-            <div className="form-group full">
-              <label>Description</label>
-              <textarea name="description" rows="4" placeholder="Describe the device and its condition..." value={form.description} onChange={update} />
-            </div>
-
-            <div className="form-group full">
-              <label>Device Image</label>
-              <div className="upload-box">
-                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImage} />
-
-                {image && (
-                  <img src={URL.createObjectURL(image)} alt="Preview" className="image-preview" />
-                )}
-              </div>
-              <small>JPG, PNG or WebP • Maximum 5 MB</small>
-            </div>
+        <div className="donation-card">
+          <div className="donation-header">
+            <h1>Donate E-Waste</h1>
+            <p>Help give your old electronics a second life.</p>
           </div>
 
-          <button type="button" className="verify-btn" onClick={verifyImage} disabled={loading || !image || !form.device} >
-            {loading ? 'Verifying...' : 'Verify Image'}
-          </button>
+          {error && <div className="form-alert error">{error}</div>}
+          {success && <div className="form-alert success">{success}</div>}
 
-          {verification && (
-            <div className={`verification ${verification.verified ? 'valid' : 'invalid'}`}>
-              <h3>
-                {verification.verified ? '✓ Image Verified' : '✕ Image Not Verified'}
-              </h3>
-
-              <div className="verification-grid">
-                <span>Detected</span>
-                <strong>{verification.deviceDetected || 'Unknown'}</strong>
-
-                <span>Device Match</span>
-                <strong>{verification.deviceMatch ? 'Yes' : 'No'}</strong>
-
-                <span>Image Quality</span>
-                <strong>{verification.imageQuality || 'Unknown'}</strong>
-
-                <span>Confidence</span>
-                <strong>
-                  {typeof verification.confidence === 'number' ? `${(verification.confidence * 100).toFixed(0)}%` : 'N/A'}
-                </strong>
+          <form onSubmit={submit}>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>E-Waste Type</label>
+                <select name="device" value={form.device} onChange={update}>
+                  <option value="">Select device</option>
+                  {devices.map((item) => (
+                    <option key={item} value={item}>{item}</option>
+                  ))}
+                </select>
               </div>
 
-              <p>{verification.reason}</p>
-            </div>
-          )}
+              <div className="form-group">
+                <label>Quantity</label>
+                <input name="quantity" type="number" min="1" value={form.quantity} onChange={update} />
+              </div>
 
-          <button type="submit" className="submit-btn" disabled={loading || !verification?.verified} >
-            Submit Donation
-          </button>
-        </form>
+              <div className="form-group">
+                <label>Condition</label>
+                <select name="condition" value={form.condition} onChange={update}>
+                  <option value="">Select condition</option>
+                  <option>Working</option>
+                  <option>Partially Working</option>
+                  <option>Not Working</option>
+                  <option>For Parts</option>
+                </select>
+              </div>
+
+              <div className="form-group full">
+                <label>Description</label>
+                <textarea name="description" rows="4" placeholder="Describe the device and its condition..." value={form.description} onChange={update} />
+              </div>
+
+              <div className="form-group full">
+                <label>Device Image</label>
+                <div className="upload-box">
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImage} />
+
+                  {image && (
+                    <img src={URL.createObjectURL(image)} alt="Preview" className="image-preview" />
+                  )}
+                </div>
+                <small>JPG, PNG or WebP • Maximum 5 MB</small>
+              </div>
+            </div>
+
+            <button type="button" className="verify-btn" onClick={verifyImage} disabled={loading || !image || !form.device} >
+              {loading ? 'Verifying...' : 'Verify Image'}
+            </button>
+
+            {verification && (
+              <div className={`verification ${verification.verified ? 'valid' : 'invalid'}`}>
+                <h3>
+                  {verification.verified ? '✓ Image Verified' : '✕ Image Not Verified'}
+                </h3>
+
+                <div className="verification-grid">
+                  <span>Detected</span>
+                  <strong>{verification.deviceDetected || 'Unknown'}</strong>
+
+                  <span>Device Match</span>
+                  <strong>{verification.deviceMatch ? 'Yes' : 'No'}</strong>
+
+                  <span>Image Quality</span>
+                  <strong>{verification.imageQuality || 'Unknown'}</strong>
+
+                  <span>Confidence</span>
+                  <strong>
+                    {typeof verification.confidence === 'number' ? `${(verification.confidence * 100).toFixed(0)}%` : 'N/A'}
+                  </strong>
+                </div>
+
+                <p>{verification.reason}</p>
+              </div>
+            )}
+
+            <button type="submit" className="submit-btn" disabled={loading || !verification?.verified} >
+              Submit Donation
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

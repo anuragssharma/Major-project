@@ -1,15 +1,18 @@
 import '../../App.css'
-export default function DonorDashboard({ user, navigate, logout }) {
+export default function DonorDashboard({ user, navigate, logout,home }) {
     return <>
         <header className="topbar">
             <strong>eDonationHub — Donor
             </strong>
             <nav>
-                <button onClick={() => navigate('donor-dashboard')}>Dashboard
+                <button onClick={() => navigate('donor-dashboard')}>
+                    Dashboard
                 </button>
-                <button onClick={() => navigate('donor-donation')}>Donate E-Waste
+                <button onClick={() => navigate('donor-donation')}>
+                    Donate E-Waste
                 </button>
-                <button onClick={() => navigate('donor-history')}>My Donations
+                <button onClick={() => navigate('donor-history')}>
+                    My Donations
                 </button>
                 <button onClick={logout}>Logout
                 </button>
