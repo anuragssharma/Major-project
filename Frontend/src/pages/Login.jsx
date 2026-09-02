@@ -36,6 +36,26 @@ export default function Login({ onLogin, navigate }) {
                 <button className="btn btn-secondary" onClick={() => navigate('register')}>Register
                 </button>
             </p>
+
+            <div style={{ marginTop: '15px', borderTop: '1px solid #e5e7eb', paddingTop: '15px' }}>
+                    <button 
+                        onClick={() => navigate('home')} 
+                        style={{
+                            width: '100%',
+                            padding: '10px 24px',
+                            backgroundColor: 'white',
+                            color: '#0b4f26',
+                            border: '2px solid #0b4f26',
+                            borderRadius: '6px',
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s'
+                        }}
+                    >
+                        Go Back Home
+                    </button>
+                </div>
         </section>
     </main>
 }

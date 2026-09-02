@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import Home from './pages/Home' // Import your new landing page
+import About from './pages/About'
+import Contact from './pages/Contact'
+import Impact from './pages/Impact'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import DonorDashboard from './pages/donor/DonorDashboard'
@@ -16,7 +20,7 @@ import './App.css'
 
 export default function App() {
   const [user, setUser] = useState(null)
-  const [page, setPage] = useState('login')
+  const [page, setPage] = useState('home') // Start on the new home/landing page!
 
   const login = (role) => {
     const names = { donor: 'Donor', ngo: 'Green Earth NGO', admin: 'Administrator' }
@@ -24,11 +28,16 @@ export default function App() {
     setPage(`${role}-dashboard`)
   }
 
-  const logout = () => { setUser(null); setPage('login') }
+  const logout = () => { setUser(null); setPage('home') } // Redirect back to home on logout
   const navigate = (nextPage) => setPage(nextPage)
 
+  // Show Home page first if not logged in and page is 'home'
+  if (!user && page === 'home') return <Home navigate={navigate} />
   if (!user && page === 'register') return <Register navigate={navigate} />
-  if (!user) return <Login navigate={navigate} onLogin={login} />
+  if (!user && page === 'login') return <Login navigate={navigate} onLogin={login} />
+  if (!user && page === 'about') return <About navigate={navigate} />
+  if (!user && page === 'contact') return <Contact navigate={navigate} />
+  if (!user && page === 'impact') return <Impact navigate={navigate} />
 
   if (user.role === 'donor') {
     if (page === 'donor-donation') return <DonationForm navigate={navigate} />
