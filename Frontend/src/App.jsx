@@ -1,61 +1,100 @@
-import { useState } from 'react'
-import Home from './pages/Home' // Import your new landing page
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Impact from './pages/Impact'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import DonorDashboard from './pages/donor/DonorDashboard'
-import DonationForm from './pages/donor/DonationForm'
-import MyDonations from './pages/donor/MyDonations'
-import NgoDashboard from './pages/ngo/NgoDashboard'
-import AvailableDonations from './pages/ngo/AvailableDonations'
-import DonationRequests from './pages/ngo/DonationRequests'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import NgoRequests from './pages/admin/NgoRequests'
-import ManageNgos from './pages/admin/ManageNgos'
-import ManageDonors from './pages/admin/ManageDonors'
-import ManageDonations from './pages/admin/ManageDonations'
-import './App.css'
+import React from 'react';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
+import { AccountLayout } from './components/AccountLayout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
 
-export default function App() {
-  const [user, setUser] = useState(null)
-  const [page, setPage] = useState('home') // Start on the new home/landing page!
+// Public Pre-Login Pages
+import { Home } from './pages/public/Home';
+import { Impact } from './pages/public/Impact';
+import { About } from './pages/public/About';
+import { Contact } from './pages/public/Contact';
+import { Login } from './pages/public/Login';
+import { Register } from './pages/public/Register';
 
-  const login = (role) => {
-    const names = { donor: 'Donor', ngo: 'Green Earth NGO', admin: 'Administrator' }
-    setUser({ name: names[role], role })
-    setPage(`${role}-dashboard`)
-  }
+// Donor & Shared Feature Pages
+import { DonorDashboard } from './pages/donor/DonorDashboard';
+import { DonationForm } from './pages/donor/DonationForm';
+import { MyDonations } from './pages/donor/MyDonations';
 
-  const logout = () => { setUser(null); setPage('home') } // Redirect back to home on logout
-  const navigate = (nextPage) => setPage(nextPage)
+// NGO Feature Pages
+import { AvailableDonations } from './pages/ngo/AvailableDonations';
+import { MyRequests } from './pages/ngo/MyRequests';
 
-  // Show Home page first if not logged in and page is 'home'
-  if (!user && page === 'home') return <Home navigate={navigate} />
-  if (!user && page === 'register') return <Register navigate={navigate} />
-  if (!user && page === 'login') return <Login navigate={navigate} onLogin={login} />
-  if (!user && page === 'about') return <About navigate={navigate} />
-  if (!user && page === 'contact') return <Contact navigate={navigate} />
-  if (!user && page === 'impact') return <Impact navigate={navigate} />
+// Admin Feature Pages
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { ManageNGOs } from './pages/admin/ManageNGOs';
+import { ManageDonors } from './pages/admin/ManageDonors';
+import { AdminDonations } from './pages/admin/AdminDonations';
 
-  if (user.role === 'donor') {
-    if (page === 'donor-donation') return <DonationForm navigate={navigate} />
-    if (page === 'donor-history') return <MyDonations navigate={navigate} />
-    return <DonorDashboard user={user} navigate={navigate} logout={logout} />
-  }
+const PublicLayout = () => (
+  <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+    <Navbar />
+    <main className="flex-1">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+);
 
-  if (user.role === 'ngo') {
-    if (page === 'ngo-available') return <AvailableDonations navigate={navigate} />
-    if (page === 'ngo-requests') return <DonationRequests navigate={navigate} />
-    return <NgoDashboard user={user} navigate={navigate} logout={logout} />
-  }
+export const App = () => {
+  const { user } = useAuth();
 
-  if (user.role === 'admin') {
-    if (page === 'admin-ngo-requests') return <NgoRequests navigate={navigate} />
-    if (page === 'admin-ngos') return <ManageNgos navigate={navigate} />
-    if (page === 'admin-donors') return <ManageDonors navigate={navigate} />
-    if (page === 'admin-donations') return <ManageDonations navigate={navigate} />
-    return <AdminDashboard user={user} navigate={navigate} logout={logout} />
-  }
-}
+  const getAccountRedirect = () => {
+    if (!user) return '/login';
+    if (user.role === 'DONOR') return '/account/dashboard';
+    if (user.role === 'NGO') return '/account/available-donations';
+    if (user.role === 'ADMIN') return '/account/ngo-requests';
+    return '/';
+  };
+
+  return (
+    <Routes>
+      {/* Public Pages */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/impact" element={<Impact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={!user ? <Login /> : <Navigate to={getAccountRedirect()} />} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to={getAccountRedirect()} />} />
+      </Route>
+
+      {/* Authenticated Account Portals */}
+      <Route path="/account" element={<AccountLayout />}>
+        <Route index element={<Navigate to={getAccountRedirect()} replace />} />
+
+        {/* DONOR Only */}
+        <Route element={<ProtectedRoute allowedRoles={['DONOR']} />}>
+          <Route path="dashboard" element={<DonorDashboard />} />
+        </Route>
+
+        {/* Both DONOR and NGO */}
+        <Route element={<ProtectedRoute allowedRoles={['DONOR', 'NGO']} />}>
+          <Route path="donate" element={<DonationForm />} />
+          <Route path="my-donations" element={<MyDonations />} />
+        </Route>
+
+        {/* NGO Only */}
+        <Route element={<ProtectedRoute allowedRoles={['NGO']} />}>
+          <Route path="available-donations" element={<AvailableDonations />} />
+          <Route path="my-requests" element={<MyRequests />} />
+        </Route>
+
+        {/* ADMIN Only */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+          <Route path="ngo-requests" element={<AdminDashboard />} />
+          <Route path="manage-ngos" element={<ManageNGOs />} />
+          <Route path="manage-donors" element={<ManageDonors />} />
+          <Route path="donations" element={<AdminDonations />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+export default App;
