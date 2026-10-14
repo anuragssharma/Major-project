@@ -25,7 +25,7 @@ import { MyRequests } from './pages/ngo/MyRequests';
 
 // Admin Feature Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { ManageNGOs } from './pages/admin/ManageNGOs';
+import { ManageNGOs } from './pages/admin/ManageNgos';
 import { ManageDonors } from './pages/admin/ManageDonors';
 import { AdminDonations } from './pages/admin/AdminDonations';
 
