@@ -11,8 +11,8 @@ const seedAdmin = async () => {
     await mongoose.connect(mongoUri);
     console.log('[Seed] Connected to database:', mongoUri);
 
-    const email = 'anurag@edh.com';
-    const rawPassword = 'admin1@anu';
+    const email = 'admin@edh.com';
+    const rawPassword = 'admin1@123';
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
     const existingAdmin = await User.findOne({ email });
