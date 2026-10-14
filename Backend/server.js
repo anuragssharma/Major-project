@@ -9,10 +9,41 @@ connectDB();
 
 const app = express();
 
+// Allowed origins list
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://major-project-opal-omega.vercel.app'
+];
+
+// If CLIENT_URL is defined in .env, clean it (remove trailing slashes or subpaths) and add it
+if (process.env.CLIENT_URL) {
+  const cleanClientUrl = process.env.CLIENT_URL.replace(/\/+$/, '').split('/login')[0];
+  if (!allowedOrigins.includes(cleanClientUrl)) {
+    allowedOrigins.push(cleanClientUrl);
+  }
+}
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow non-browser requests (e.g. Postman, mobile apps, or server-to-server)
+    if (!origin) return callback(null, true);
+
+    // Normalize origin by stripping any trailing slash
+    const sanitizedOrigin = origin.replace(/\/+$/, '');
+
+    if (allowedOrigins.includes(sanitizedOrigin) || sanitizedOrigin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Explicitly handle CORS preflight for all routes
+app.options('*', cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
