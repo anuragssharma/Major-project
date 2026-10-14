@@ -1,3 +1,9 @@
+/**
+ * ============================================================================
+ * Component: ManageDonors (Admin Portal)
+ * Description: Directory of registered donors with real-time search & delete.
+ * ============================================================================
+ */
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { StatusBadge } from '../../components/StatusBadge';

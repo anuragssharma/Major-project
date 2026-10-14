@@ -1,3 +1,12 @@
+/**
+ * ============================================================================
+ * Page: Contact & Regional Disposal Directory
+ * Description: Informational resource covering headquarters contact channels,
+ *              walk-in electronic collection centers across Mumbai, statutory
+ *              CPCB & MPCB compliance guides, data destruction protocols,
+ *              and common donor FAQs.
+ * ============================================================================
+ */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {

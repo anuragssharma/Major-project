@@ -1,3 +1,12 @@
+/**
+ * ============================================================================
+ * Component: AvailableDonations (NGO Portal)
+ * Description: E-commerce style card catalog (Flipkart/Myntra layout) for incoming
+ *              donations. Displays compact device photos, condition tags, donor
+ *              location, scheduled date/time slot, Gemini AI verification, and
+ *              quick-action pipeline buttons.
+ * ============================================================================
+ */
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { StatusBadge } from '../../components/StatusBadge';

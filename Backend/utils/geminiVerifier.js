@@ -1,3 +1,11 @@
+/**
+ * ============================================================================
+ * Utility: geminiVerifier.js
+ * Description: Hardware photo authenticity verification via Google AI Studio.
+ *              Uses free-tier compatible models (Flash-Lite / Flash 3.5 & 3.8)
+ *              with exponential backoff retries.
+ * ============================================================================
+ */
 const { GoogleGenAI } = require('@google/genai');
 const fs = require('fs');
 

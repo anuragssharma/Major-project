@@ -1,3 +1,8 @@
+/**
+ * ============================================================================
+ * Controller: adminController.js
+ * ============================================================================
+ */
 const User = require('../models/User');
 const NGO = require('../models/NGO');
 const Donation = require('../models/Donation');

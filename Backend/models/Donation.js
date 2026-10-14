@@ -1,3 +1,10 @@
+/**
+ * ============================================================================
+ * Model: Donation
+ * Description: Stores device specifications, AI inspection results, pickup 
+ *              address, scheduled date/time slot, and lifecycle workflow states.
+ * ============================================================================
+ */
 const mongoose = require('mongoose');
 
 const donationSchema = new mongoose.Schema({

@@ -1,3 +1,8 @@
+/**
+ * ============================================================================
+ * Controller: donationController
+ * ============================================================================
+ */
 const Donation = require('../models/Donation');
 const NGO = require('../models/NGO');
 const { verifyDeviceImage } = require('../utils/geminiVerifier');
