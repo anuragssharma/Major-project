@@ -11,11 +11,11 @@ const userSchema = new mongoose.Schema({
     enum: ['DONOR', 'NGO', 'ADMIN'], 
     default: 'DONOR' 
   },
-  status: { 
-    type: String, 
-    enum: ['ACTIVE', 'INACTIVE', 'PENDING'], 
-    default: 'ACTIVE' 
-  }
+  status: {
+  type: String,
+  enum: ['ACTIVE', 'PENDING', 'SUSPENDED', 'INACTIVE', 'REJECTED'],
+  default: 'ACTIVE'
+},
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

@@ -12,23 +12,22 @@ export const AccountLayout = () => {
   };
 
   const linkClass = ({ isActive }) =>
-    `text-sm font-semibold transition-all px-3 py-1.5 rounded-md ${
-      isActive
-        ? 'text-white font-medium bg-emerald-600 shadow-md shadow-emerald-600/20'
-        : 'text-white hover:text-white hover:bg-[#032e19]/60'
+    `text-sm font-semibold transition-all px-3 py-1.5 rounded-md ${isActive
+      ? 'text-white font-medium bg-emerald-600 shadow-md shadow-emerald-600/20'
+      : 'text-white hover:text-white hover:bg-[#032e19]/60'
     }`;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
       <header className="bg-[#054425] text-white px-4 md:px-8 py-3.5 border-b border-[#04331c] shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          
+
           <div className="flex items-center gap-3">
             <NavLink to="/" className="flex items-center gap-2.5 group">
-              <img 
-                src="/logo-icon.png" 
-                alt="eDonationHUB Icon" 
-                className="h-7 w-7 object-contain bg-white rounded-full p-0.5 group-hover:scale-105 transition-transform" 
+              <img
+                src="/logo-icon.png"
+                alt="eDonationHUB Icon"
+                className="h-7 w-7 object-contain bg-white rounded-full p-0.5 group-hover:scale-105 transition-transform"
               />
               <span className="font-extrabold text-lg text-white tracking-tight">
                 eDonation<span className="text-emerald-400">HUB</span>
@@ -44,6 +43,7 @@ export const AccountLayout = () => {
               Home
             </NavLink>
 
+            {/* DONOR Links */}
             {user?.role === 'DONOR' && (
               <>
                 <NavLink to="/account/dashboard" className={linkClass}>
@@ -58,6 +58,7 @@ export const AccountLayout = () => {
               </>
             )}
 
+            {/* NGO Links */}
             {user?.role === 'NGO' && (
               <>
                 <NavLink to="/account/available-donations" className={linkClass}>
@@ -66,12 +67,23 @@ export const AccountLayout = () => {
                 <NavLink to="/account/donate" className={linkClass}>
                   Add Donation
                 </NavLink>
+                <NavLink to="/account/donated" className={linkClass}>
+                  Donated Ledger
+                </NavLink>
                 <NavLink to="/account/my-requests" className={linkClass}>
                   My Requests
+                </NavLink>
+                {/* Added Donors/Users link */}
+                <NavLink to="/account/users" className={linkClass}>
+                  Manage Donors
+                </NavLink>
+                <NavLink to="/account/inquiries" className={linkClass} >
+                  Inquiries
                 </NavLink>
               </>
             )}
 
+            {/* ADMIN Links */}
             {user?.role === 'ADMIN' && (
               <>
                 <NavLink to="/account/ngo-requests" className={linkClass}>

@@ -14,7 +14,8 @@ exports.verifyUploadedImage = async (req, res) => {
       return res.status(400).json({ message: 'No image file uploaded for inspection.' });
     }
 
-    const verification = await verifyDeviceImage(req.file.path, req.file.mimetype);
+    const { deviceType } = req.body;
+    const verification = await verifyDeviceImage(req.file.path, req.file.mimetype, deviceType);
     res.json(verification);
   } catch (err) {
     res.status(500).json({ message: err.message || 'Image inspection failed.' });
@@ -129,31 +130,45 @@ exports.getDonationById = async (req, res) => {
 
 exports.updateDonationStatus = async (req, res) => {
   try {
-    const { status, resolutionNotes } = req.body;
+    const { status, condition, assignedDestination, resolutionNotes } = req.body;
     const donation = await Donation.findById(req.params.id);
 
     if (!donation) {
       return res.status(404).json({ message: 'Donation not found.' });
     }
 
+    // Updated valid statuses matching the Pickup -> Received -> Dispatch flow
     const validStatuses = [
       'Submitted',
-      'Accepted',
-      'Rejected',
+      'Pickup Scheduled',
+      'Received',
       'Distributed',
       'Sent for Recycling',
-      'Completed'
+      'Completed',
+      'Rejected'
     ];
 
-    if (!validStatuses.includes(status)) {
+    if (status && !validStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status workflow step.' });
     }
 
-    donation.status = status;
-    if (resolutionNotes) {
+    if (status) donation.status = status;
+
+    // Allow NGO inspection to override condition (Functional <-> Non-functional)
+    if (condition && ['Functional', 'Non-functional'].includes(condition)) {
+      donation.condition = condition;
+    }
+
+    // Save assigned recycler or beneficiary school/NGO details
+    if (assignedDestination) {
+      donation.assignedDestination = assignedDestination;
+    }
+
+    if (resolutionNotes !== undefined) {
       donation.resolutionNotes = resolutionNotes;
     }
 
+    // Attach handling NGO
     if (req.user.role === 'NGO') {
       const ngo = await NGO.findOne({ user: req.user._id });
       if (ngo) {
@@ -164,6 +179,7 @@ exports.updateDonationStatus = async (req, res) => {
     await donation.save();
     res.json({ message: 'Donation updated successfully', donation });
   } catch (err) {
+    console.error('Update status error:', err);
     res.status(500).json({ message: err.message });
   }
 };

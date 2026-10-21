@@ -9,10 +9,15 @@ const ngoSchema = new mongoose.Schema({
   contactEmail: { type: String, required: true },
   officeAddress: { type: String, required: true },
   documentUrl: { type: String, default: '' },
-  approvalStatus: { 
-    type: String, 
-    enum: ['PENDING', 'APPROVED', 'REJECTED'], 
-    default: 'PENDING' 
+  // approvalStatus: { 
+  //   type: String, 
+  //   enum: ['PENDING', 'APPROVED', 'REJECTED'], 
+  //   default: 'PENDING' 
+  // }
+  approvalStatus: {
+    type: String,
+    enum: ['APPROVED'],
+    default: 'APPROVED'
   },
   rejectionReason: { type: String, default: null }
 }, { timestamps: true });

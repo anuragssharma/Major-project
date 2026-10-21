@@ -16,7 +16,7 @@ export const Login = () => {
       const user = await login(email, password);
       if (user.role === 'DONOR') navigate('/account/dashboard');
       else if (user.role === 'NGO') navigate('/account/available-donations');
-      else if (user.role === 'ADMIN') navigate('/account/ngo-requests');
+      // else if (user.role === 'ADMIN') navigate('/account/ngo-requests');
       else navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check credentials.');

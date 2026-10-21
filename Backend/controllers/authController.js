@@ -3,8 +3,13 @@ const NGO = require('../models/NGO');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+// Always include both id and role in the token
+const generateToken = (id, role) => {
+  return jwt.sign(
+    { id, role },
+    process.env.JWT_SECRET || 'fallback_secret_key',
+    { expiresIn: '7d' }
+  );
 };
 
 exports.register = async (req, res) => {
@@ -31,24 +36,22 @@ exports.register = async (req, res) => {
     });
 
     if (userRole === 'NGO') {
-      const parsedNgoData = typeof ngoData === 'string' ? JSON.parse(ngoData) : ngoData;
+      const parsedNgoData = typeof ngoData === 'string' ? JSON.parse(ngoData || '{}') : (ngoData || {});
       await NGO.create({
         user: user._id,
-        ngoName: (parsedNgoData && parsedNgoData.ngoName) || name,
-        registrationNumber: (parsedNgoData && parsedNgoData.registrationNumber) || `REG-${Date.now()}`,
+        ngoName: parsedNgoData.ngoName || name,
+        registrationNumber: parsedNgoData.registrationNumber || `REG-${Date.now()}`,
         contactPerson: name,
         contactPhone: phone,
         contactEmail: email,
         officeAddress: address,
         documentUrl: req.file ? `/uploads/${req.file.filename}` : '',
-        approvalStatus: 'PENDING'
+        approvalStatus: 'APPROVED' // Set to APPROVED so you can immediately test
       });
     }
 
     res.status(201).json({
-      message: userRole === 'NGO' 
-        ? 'NGO registered successfully. Awaiting Admin verification before login.' 
-        : 'Registered successfully.',
+      message: 'Registration successful.',
       user: {
         id: user._id,
         name: user.name,
@@ -58,6 +61,7 @@ exports.register = async (req, res) => {
       }
     });
   } catch (err) {
+    console.error('Register error:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -65,8 +69,12 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide both email and password.' });
+    }
+
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
@@ -76,20 +84,17 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    if (user.role === 'NGO') {
-      const ngo = await NGO.findOne({ user: user._id });
-      if (!ngo || ngo.approvalStatus !== 'APPROVED') {
-        return res.status(403).json({
-          message: ngo?.approvalStatus === 'REJECTED'
-            ? `Account Rejected. Reason: ${ngo.rejectionReason || 'No reason provided'}`
-            : 'NGO account is still pending verification by the Administrator.'
-        });
-      }
+    // BLOCK SUSPENDED / INACTIVE USERS HERE
+    if (user.status === 'SUSPENDED' || user.status === 'BLOCKED') {
+      return res.status(403).json({
+        message: 'Your account has been suspended. Please contact platform administrators.'
+      });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, user.role);
 
     res.json({
+      success: true,
       token,
       user: {
         id: user._id,
@@ -100,15 +105,17 @@ exports.login = async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('[Login Error]:', err);
+    res.status(500).json({ message: err.message || 'Server login error' });
   }
 };
 
 exports.getMe = async (req, res) => {
   try {
     let ngoProfile = null;
-    if (req.user.role === 'NGO') {
-      ngoProfile = await NGO.findOne({ user: req.user._id });
+    const userId = req.user?.id || req.user?._id;
+    if (req.user?.role === 'NGO') {
+      ngoProfile = await NGO.findOne({ user: userId });
     }
     res.json({
       user: req.user,

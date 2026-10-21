@@ -28,6 +28,6 @@ router.route('/:id')
   .get(getDonationById);
 
 router.route('/:id/status')
-  .patch(authorize('NGO', 'ADMIN'), updateDonationStatus);
+  .patch(authorize('NGO'), updateDonationStatus);
 
 module.exports = router;

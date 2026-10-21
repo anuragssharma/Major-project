@@ -22,12 +22,17 @@ import { MyDonations } from './pages/donor/MyDonations';
 // NGO Feature Pages
 import { AvailableDonations } from './pages/ngo/AvailableDonations';
 import { MyRequests } from './pages/ngo/MyRequests';
+import NgoUsers from './pages/ngo/NgoUsers';
+import NgoUserDetail from './pages/ngo/NgoUserDetail';
+import DonatedHistory from './pages/ngo/DonatedHistory';
+import NgoInquiries from './pages/ngo/NgoInquiries';
 
-// Admin Feature Pages
-import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { ManageNGOs } from './pages/admin/ManageNgos';
-import { ManageDonors } from './pages/admin/ManageDonors';
-import { AdminDonations } from './pages/admin/AdminDonations';
+
+// // Admin Feature Pages
+// import { AdminDashboard } from './pages/admin/AdminDashboard';
+// import { ManageNGOs } from './pages/admin/ManageNgos';
+// import { ManageDonors } from './pages/admin/ManageDonors';
+// import { AdminDonations } from './pages/admin/AdminDonations';
 
 const PublicLayout = () => (
   <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
@@ -46,7 +51,7 @@ export const App = () => {
     if (!user) return '/login';
     if (user.role === 'DONOR') return '/account/dashboard';
     if (user.role === 'NGO') return '/account/available-donations';
-    if (user.role === 'ADMIN') return '/account/ngo-requests';
+    // if (user.role === 'ADMIN') return '/account/ngo-requests';
     return '/';
   };
 
@@ -81,15 +86,21 @@ export const App = () => {
         <Route element={<ProtectedRoute allowedRoles={['NGO']} />}>
           <Route path="available-donations" element={<AvailableDonations />} />
           <Route path="my-requests" element={<MyRequests />} />
+          {/* New NGO Donor/User Management Views */}
+          <Route path="users" element={<NgoUsers />} />
+          // Under NGO routes:
+          <Route path="/account/donated" element={<DonatedHistory />} />
+          <Route path="/account/inquiries" element={<NgoInquiries />} />
+          <Route path="users/:id" element={<NgoUserDetail />} />
         </Route>
 
-        {/* ADMIN Only */}
+        {/* ADMIN Only
         <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
           <Route path="ngo-requests" element={<AdminDashboard />} />
           <Route path="manage-ngos" element={<ManageNGOs />} />
           <Route path="manage-donors" element={<ManageDonors />} />
           <Route path="donations" element={<AdminDonations />} />
-        </Route>
+        </Route> */}
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -3,23 +3,29 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 
 export const Register = () => {
-  const [role, setRole] = useState('DONOR');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phone: '',
-    address: '',
-    ngoName: '',
-    registrationNumber: ''
+    address: ''
   });
-  const [documentFile, setDocumentFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Enforce numeric-only input and max 10 digits in real-time for phone
+    if (name === 'phone') {
+      const numericOnly = value.replace(/\D/g, '').slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: numericOnly }));
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -27,188 +33,160 @@ export const Register = () => {
     setError('');
     setSuccess('');
 
+    // Explicit validation check for password
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    // Explicit validation check for contact phone length
+    if (formData.phone.length !== 10) {
+      setError('Contact phone number must be exactly 10 digits.');
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const data = new FormData();
-      data.append('name', formData.name);
-      data.append('email', formData.email);
-      data.append('password', formData.password);
-      data.append('phone', formData.phone);
-      data.append('address', formData.address);
-      data.append('role', role);
-
-      if (role === 'NGO') {
-        data.append('ngoData', JSON.stringify({
-          ngoName: formData.ngoName || formData.name,
-          registrationNumber: formData.registrationNumber
-        }));
-        if (documentFile) {
-          data.append('document', documentFile);
-        }
-      }
-
-      const res = await api.post('/auth/register', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const res = await api.post('/auth/register', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        role: 'DONOR'
       });
 
-      setSuccess(res.data.message);
+      setSuccess(res.data?.message || 'Registration successful! Redirecting to login...');
       setTimeout(() => {
         navigate('/login');
-      }, 2000);
+      }, 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed.');
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="py-12 px-4 flex justify-center">
-      <div className="max-w-xl w-full border border-gray-200 bg-white p-8 rounded-2xl shadow-sm">
-        <h2 className="text-2xl font-bold text-gray-900 text-center">Create an Account</h2>
-        <p className="text-sm text-gray-500 text-center mt-1">Join the eDonationHUB sustainable electronics network</p>
+      <div className="max-w-md w-full border border-gray-200 bg-white p-8 rounded-2xl shadow-sm">
+        <div className="text-center">
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight">Create Donor Account</h2>
+          <p className="text-xs text-gray-500 mt-1">
+            Join eDonationHUB to donate unused electronics and support sustainable recycling
+          </p>
+        </div>
 
         {error && (
-          <div className="mt-4 p-3 bg-red-50 text-red-700 text-sm rounded-xl border border-red-200">
+          <div className="mt-4 p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 font-medium">
             {error}
           </div>
         )}
         {success && (
-          <div className="mt-4 p-3 bg-emerald-50 text-emerald-800 text-sm rounded-xl border border-emerald-200">
+          <div className="mt-4 p-3 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 font-medium">
             {success}
           </div>
         )}
 
-        <div className="mt-6 flex gap-4">
-          <button
-            type="button"
-            onClick={() => setRole('DONOR')}
-            className={`flex-1 py-2.5 text-sm font-bold rounded-xl border transition ${
-              role === 'DONOR'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-500'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-            }`}
-          >
-            Donor Account
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('NGO')}
-            className={`flex-1 py-2.5 text-sm font-bold rounded-xl border transition ${
-              role === 'NGO'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-500'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-            }`}
-          >
-            NGO Partner Account
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4 text-xs">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name / Official Contact</label>
+            <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Full Name
+            </label>
             <input
               type="text"
               name="name"
               required
+              minLength={2}
+              maxLength={50}
+              placeholder="e.g. John Doe"
               value={formData.name}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
+            <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Email Address
+            </label>
             <input
               type="email"
               name="email"
               required
+              placeholder="e.g. donor@example.com"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Password
+            </label>
             <input
               type="password"
               name="password"
               required
+              minLength={6}
+              placeholder="At least 6 characters"
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Contact Phone</label>
+            <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Contact Number
+            </label>
             <input
               type="tel"
               name="phone"
               required
+              minLength={10}
+              maxLength={10}
+              pattern="[0-9]{10}"
+              title="Please enter a valid 10-digit mobile number"
+              placeholder="10-digit mobile number"
               value={formData.phone}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition font-mono"
             />
+            {/* <span className="text-[10px] text-gray-400 mt-0.5 block">
+              {formData.phone.length}/10 digits entered
+            </span> */}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Physical Address</label>
+            <label className="block font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Pickup Address
+            </label>
             <textarea
               name="address"
               required
               rows="2"
+              placeholder="Building, Street, Landmark, Area, City..."
               value={formData.address}
               onChange={handleChange}
-              className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
             />
           </div>
 
-          {role === 'NGO' && (
-            <div className="pt-4 border-t space-y-4">
-              <h3 className="text-sm font-bold text-gray-900">NGO Verification Details</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Organization Legal Name</label>
-                <input
-                  type="text"
-                  name="ngoName"
-                  required
-                  value={formData.ngoName}
-                  onChange={handleChange}
-                  className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">NGO Registration Number</label>
-                <input
-                  type="text"
-                  name="registrationNumber"
-                  required
-                  value={formData.registrationNumber}
-                  onChange={handleChange}
-                  className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Registration Certificate (PDF or Image)</label>
-                <input
-                  type="file"
-                  onChange={(e) => setDocumentFile(e.target.files[0])}
-                  className="mt-1 w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
-                />
-              </div>
-            </div>
-          )}
-
           <button
             type="submit"
-            className="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold hover:bg-emerald-700 transition"
+            disabled={loading}
+            className="w-full bg-[#054425] hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-sm disabled:opacity-50 mt-2"
           >
-            {role === 'NGO' ? 'Submit NGO Application' : 'Register as Donor'}
+            {loading ? 'Creating Account...' : 'Register as Donor'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Already registered?{' '}
-          <Link to="/login" className="text-emerald-600 font-bold hover:underline">
+        <p className="text-center text-xs text-gray-500 mt-5">
+          Already have an account?{' '}
+          <Link to="/login" className="text-emerald-700 font-bold hover:underline">
             Log In
           </Link>
         </p>
